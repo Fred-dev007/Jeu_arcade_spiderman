@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider-Man: Web Challenge | Jeu Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --spider-red: #e63946;
+      --spider-blue: #1d3557;
+      --spider-light: #f1faee;
+      --spider-accent: #a8dadc;
+      --spider-dark: #0a192f;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--spider-dark) 0%, #172a45 100%);
+      color: var(--spider-light);
+      overflow-x: hidden;
+    }
+    
+    .title-font {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+    }
+    
+    .glass-panel {
+      background: rgba(15, 25, 45, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(100, 180, 246, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .spider-gradient {
+      background: linear-gradient(135deg, var(--spider-red) 0%, var(--spider-blue) 100%);
+    }
+    
+    .spider-text-gradient {
+      background: linear-gradient(135deg, var(--spider-red) 0%, var(--spider-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--spider-red) 0%, var(--spider-blue) 100%);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(230, 57, 70, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background: rgba(168, 218, 220, 0.15);
+      color: var(--spider-accent);
+      border: 1px solid rgba(168, 218, 220, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(168, 218, 220, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    .spider-pulse {
+      animation: spiderPulse 3s infinite;
+    }
+    
+    @keyframes spiderPulse {
+      0% { box-shadow: 0 0 10px rgba(230, 57, 70, 0.4); }
+      50% { box-shadow: 0 0 20px rgba(230, 57, 70, 0.7); }
+      100% { box-shadow: 0 0 10px rgba(230, 57, 70, 0.4); }
+    }
+    
+    canvas {
+      background: radial-gradient(circle at center, #0f1e36 0%, #0a1629 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(100, 180, 246, 0.15);
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(168, 218, 220, 0.1);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border-color: rgba(168, 218, 220, 0.3);
+    }
+    
+    .spider-icon {
+      color: var(--spider-red);
+      filter: drop-shadow(0 0 4px rgba(230, 57, 70, 0.7));
+    }
+    
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .mobile-controls {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-controls {
+        display: flex;
+      }
+      
+      .desktop-instructions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 pt-8 pb-16">
+  <!-- Header -->
+  <header class="w-full max-w-6xl mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-bold title-font mb-2">
+          <span class="spider-text-gradient">SPIDER-MAN</span>
+        </h1>
+        <p class="text-lg text-spider-accent opacity-80">Web Challenge</p>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <div class="glass-panel rounded-xl px-6 py-3">
+          <div class="text-cyan-300 text-sm font-medium">SCORE</div>
+          <div id="scoreValue" class="text-3xl font-bold text-white">0</div>
+        </div>
+        
+        <div class="glass-panel rounded-xl px-4 py-3 flex items-center gap-2">
+          <i class="fas fa-shield-alt text-yellow-400"></i>
+          <div id="shieldIndicator" class="text-sm font-medium text-white">OFF</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="game-container w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Game Canvas Area -->
+    <div class="lg:col-span-2">
+      <div class="glass-panel rounded-2xl p-5 spider-pulse">
+        <canvas id="game" width="600" height="600" class="w-full rounded-xl"></canvas>
+        
+        <!-- Mobile Controls -->
+        <div class="mobile-controls mt-6 justify-center gap-6">
+          <button id="leftBtn" class="w-16 h-16 rounded-full bg-spider-blue flex items-center justify-center">
+            <i class="fas fa-arrow-left text-2xl text-white"></i>
+          </button>
+          <button id="rightBtn" class="w-16 h-16 rounded-full bg-spider-red flex items-center justify-center">
+            <i class="fas fa-arrow-right text-2xl text-white"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Game Controls -->
+      <div class="glass-panel rounded-2xl p-5 mt-6">
+        <div class="flex flex-wrap justify-center gap-4">
+          <button id="startButton" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg">
+            <i class="fas fa-play mr-2"></i> DÉMARRER
+          </button>
+          
+          <button id="pauseButton" disabled class="btn-secondary px-8 py-4 rounded-xl font-bold text-lg">
+            <i class="fas fa-pause mr-2"></i> PAUSE
+          </button>
+          
+          <button id="restartButton" disabled class="btn-secondary px-8 py-4 rounded-xl font-bold text-lg">
+            <i class="fas fa-redo mr-2"></i> RECOMMENCER
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="flex flex-col gap-6">
+      <!-- Instructions -->
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+          <i class="fas fa-info-circle mr-2"></i> Comment Jouer
+        </h2>
+        
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <i class="fas fa-arrow-left spider-icon mt-1 mr-3"></i>
+            <span>Utilisez les <span class="font-bold text-white">flèches gauche/droite</span> pour déplacer Spider-Man</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-ban spider-icon mt-1 mr-3"></i>
+            <span>Évitez les <span class="font-bold text-white">toiles d'araignée</span> qui tombent</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-shield-alt text-yellow-400 mt-1 mr-3"></i>
+            <span>Attrapez les <span class="font-bold text-yellow-300">boucliers dorés</span> pour une protection temporaire</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-tachometer-alt spider-icon mt-1 mr-3"></i>
+            <span>Le jeu accélère au fur et à mesure que votre score augmente</span>
+          </li>
+        </ul>
+        
+        <div class="desktop-instructions mt-6 pt-4 border-t border-spider-blue">
+          <p class="text-center text-sm opacity-75">
+            <i class="fas fa-keyboard mr-2"></i> Utilisez les touches fléchées pour jouer sur ordinateur
+          </p>
+        </div>
+      </div>
+      
+      <!-- Features -->
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+          <i class="fas fa-star mr-2"></i> Fonctionnalités Premium
+        </h2>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="feature-card glass-panel rounded-xl p-4 text-center">
+            <i class="fas fa-medal text-2xl text-yellow-400 mb-2"></i>
+            <p class="text-sm">Classements mondiaux</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center">
+            <i class="fas fa-user-astronaut text-2xl text-cyan-300 mb-2"></i>
+            <p class="text-sm">Skins exclusifs</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center">
+            <i class="fas fa-bolt text-2xl text-purple-400 mb-2"></i>
+            <p class="text-sm">Pouvoirs spéciaux</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center">
+            <i class="fas fa-trophy text-2xl text-amber-400 mb-2"></i>
+            <p class="text-sm">Défis quotidiens</p>
+          </div>
+        </div>
+        
+        <button class="btn-primary w-full mt-6 py-3 rounded-xl font-bold">
+          <i class="fas fa-crown mr-2"></i> Débloquer Premium
+        </button>
+      </div>
+      
+      <!-- Leaderboard -->
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+          <i class="fas fa-trophy mr-2"></i> Classement
+        </h2>
+        
+        <div class="space-y-3">
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">1</span>
+              </div>
+              <span>SpideyFan99</span>
+            </div>
+            <span class="font-bold">24,580</span>
+          </div>
+          
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">2</span>
+              </div>
+              <span>WebSlinger</span>
+            </div>
+            <span class="font-bold">21,340</span>
+          </div>
+          
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-amber-700 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">3</span>
+              </div>
+              <span>MJ_4ever</span>
+            </div>
+            <span class="font-bold">18,750</span>
+          </div>
+          
+          <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
+            <div class="flex items-center">
+              <span class="w-6 text-center mr-3">4</span>
+              <span>VenomFan</span>
+            </div>
+            <span>15,220</span>
+          </div>
+          
+          <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
+            <div class="flex items-center">
+              <span class="w-6 text-center mr-3">5</span>
+              <span>GwenStacy</span>
+            </div>
+            <span>12,450</span>
+          </div>
+        </div>
+        
+        <div class="text-center mt-4">
+          <button class="text-spider-accent text-sm font-medium">
+            Voir le classement complet <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="glass-panel rounded-2xl p-8 max-w-md w-full mx-4">
+      <div class="text-center">
+        <i class="fas fa-skull text-4xl text-red-500 mb-4"></i>
+        <h2 class="text-3xl font-bold title-font mb-2">Game Over!</h2>
+        <p class="text-xl mb-2">Votre score: <span id="finalScore" class="font-bold text-white">0</span></p>
+        <p class="text-spider-accent mb-6">Essayez de battre votre record!</p>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <button id="modalRestart" class="btn-primary py-3 rounded-xl font-bold">
+            <i class="fas fa-redo mr-2"></i> Rejouer
+          </button>
+          <button id="modalMenu" class="btn-secondary py-3 rounded-xl font-bold">
+            <i class="fas fa-home mr-2"></i> Menu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <audio id="bgMusic" src="spiderman.mp3" loop></audio>
+  
+  <!-- Footer -->
+  <footer class="mt-12 text-center text-slate-400 text-sm max-w-6xl w-full">
+    <div class="glass-panel rounded-xl p-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <p>© 2023 Spider-Man: Web Challenge. Tous droits réservés.</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-spider-accent transition-colors">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="hover:text-spider-accent transition-colors">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="#" class="hover:text-spider-accent transition-colors">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="hover:text-spider-accent transition-colors">
+            <i class="fab fa-discord"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('scoreValue');
+    const shieldElement = document.getElementById('shieldIndicator');
+    const startButton = document.getElementById('startButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const restartButton = document.getElementById('restartButton');
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const finalScoreElement = document.getElementById('finalScore');
+    const modalRestart = document.getElementById('modalRestart');
+    const modalMenu = document.getElementById('modalMenu');
+
+    // Game variables
+    let canvasWidth = canvas.width;
+    let canvasHeight = canvas.height;
+    let gameRunning = false;
+    let gamePaused = false;
+    let animationFrame;
+     // Player (Spider-Man)
+     const player = {
+      x: canvasWidth / 2 - 15,
+      y: canvasHeight - 60,
+      width: 30,
+      height: 50,
+      speed: 7,
+      dx: 0,
+      shield: false,
+      shieldTime: 0
+    };
+
+    // Adjust canvas size for mobile
+    function resizeCanvas() {
+      if (window.innerWidth < 768) {
+        canvas.width = window.innerWidth - 40;
+        canvas.height = window.innerWidth - 40;
+      } else {
+        canvas.width = 600;
+        canvas.height = 600;
+      }
+      canvasWidth = canvas.width;
+      canvasHeight = canvas.height;
+      player.x = canvasWidth / 2 - player.width / 2;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+   
+    // Webs (obstacles)
+    let webs = [];
+    const webSpeedBase = 3;
+    let webSpeed = webSpeedBase;
+    const webSpawnRate = 50;
+
+    // Bonuses (shields)
+    let bonuses = [];
+    const bonusSpawnRate = 3000;
+
+    // Game state
+    let score = 0;
+    let frameCount = 0;
+    let gameSpeedIncrease = 0.1;
+
+    // Create a web
+    function createWeb() {
+      const web = {
+        x: Math.random() * (canvasWidth - 30),
+        y: 0,
+        width: 25,
+        height: 25,
+        speed: webSpeed
+      };
+      webs.push(web);
+    }
+
+    // Create a bonus shield
+    function createBonus() {
+      const bonus = {
+        x: Math.random() * (canvasWidth - 20),
+        y: 0,
+        width: 22,
+        height: 22,
+        speed: 3
+      };
+      bonuses.push(bonus);
+    }
+
+    // Detect collision
+    function collision(rect1, rect2) {
+      return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y
+      );
+    }
+
+    // Keyboard controls
+    function keyDownHandler(e) {
+      if (gameRunning && !gamePaused) {
+        if (e.key === 'ArrowRight') player.dx = player.speed;
+        else if (e.key === 'ArrowLeft') player.dx = -player.speed;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') player.dx = 0;
+    }
+
+    // Mobile controls
+    leftBtn.addEventListener('mousedown', () => player.dx = -player.speed);
+    leftBtn.addEventListener('touchstart', () => player.dx = -player.speed);
+    leftBtn.addEventListener('mouseup', () => player.dx = 0);
+    leftBtn.addEventListener('touchend', () => player.dx = 0);
+    
+    rightBtn.addEventListener('mousedown', () => player.dx = player.speed);
+    rightBtn.addEventListener('touchstart', () => player.dx = player.speed);
+    rightBtn.addEventListener('mouseup', () => player.dx = 0);
+    rightBtn.addEventListener('touchend', () => player.dx = 0);
+    
+    // Prevent context menu on mobile buttons
+    [leftBtn, rightBtn].forEach(btn => {
+      btn.addEventListener('contextmenu', e => e.preventDefault());
+    });
+
+    // Update player position
+    function movePlayer() {
+      player.x += player.dx;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvasWidth) player.x = canvasWidth - player.width;
+
+      if (player.shield) {
+        player.shieldTime--;
+        shieldElement.textContent = Math.ceil(player.shieldTime / 60) + 's';
+        shieldElement.style.color = '#fbbf24';
+        
+        if (player.shieldTime <= 0) {
+          player.shield = false;
+          shieldElement.textContent = 'OFF';
+          shieldElement.style.color = '#fff';
+        }
+      }
+    }
+
+    // Update webs
+    function moveWebs() {
+      webs.forEach((web, index) => {
+        web.y += web.speed;
+        if (web.y > canvasHeight) {
+          webs.splice(index, 1);
+          score += 10;
+          webSpeed += gameSpeedIncrease;
+          updateScore();
+        }
+      });
+    }
+
+    // Update bonuses
+    function moveBonuses() {
+      bonuses.forEach((bonus, index) => {
+        bonus.y += bonus.speed;
+        if (bonus.y > canvasHeight) {
+          bonuses.splice(index, 1);
+        }
+      });
+    }
+
+    // Update score display
+    function updateScore() {
+      scoreElement.textContent = score;
+      scoreElement.parentElement.parentElement.classList.add('scale-105');
+      setTimeout(() => {
+        scoreElement.parentElement.parentElement.classList.remove('scale-105');
+      }, 100);
+    }
+
+    // Draw background
+    function drawBackground() {
+      // Base gradient
+      const gradient = ctx.createRadialGradient(
+        canvasWidth/2, canvasHeight/2, 0,
+        canvasWidth/2, canvasHeight/2, Math.max(canvasWidth, canvasHeight)
+      );
+      gradient.addColorStop(0, '#0f1e36');
+      gradient.addColorStop(1, '#0a1629');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // City skyline silhouette
+      ctx.fillStyle = 'rgba(15, 25, 45, 0.7)';
+      
+      // Draw buildings
+      const buildingHeight = 80;
+      const buildingWidth = 50;
+      const gap = 20;
+      
+      for (let i = 0; i < canvasWidth; i += buildingWidth + gap) {
+        const heightVariation = Math.random() * 30;
+        ctx.fillRect(i, canvasHeight - buildingHeight - heightVariation, buildingWidth, buildingHeight + heightVariation);
+      }
+      
+      // Stars
+      ctx.fillStyle = 'rgba(147, 197, 253, 0.8)';
+      for (let i = 0; i < 50; i++) {
+        const twinkle = Math.sin(frameCount * 0.1 + i) * 0.5 + 0.5;
+        ctx.globalAlpha = twinkle;
+        ctx.beginPath();
+        ctx.arc(
+          (i * 23) % canvasWidth,
+          (i * 17) % (canvasHeight / 2),
+          Math.random() * 1.5 + 0.5,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Draw player
+    function drawPlayer() {
+      ctx.save();
+      ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
+
+      // Shield effect
+      if (player.shield) {
+        const pulseSize = Math.sin(frameCount * 0.2) * 3 + player.width;
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, pulseSize / 2, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, (pulseSize + 5) / 2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Spider-Man body
+      // Head
+      ctx.fillStyle = '#E63946';
+      ctx.beginPath();
+      ctx.arc(0, -player.height / 3, player.width / 3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Eyes
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.ellipse(-player.width / 8, -player.height / 3 - 2, 5, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(player.width / 8, -player.height / 3 - 2, 5, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Body
+      ctx.fillStyle = '#1D3557';
+      ctx.fillRect(-player.width / 3, -player.height / 6, player.width * 2 / 3, player.height / 2);
+      
+      // Spider logo
+      ctx.fillStyle = '#E63946';
+      ctx.beginPath();
+      ctx.moveTo(0, -player.height / 6 + 5);
+      ctx.lineTo(-4, 0);
+      ctx.lineTo(4, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Legs
+      ctx.fillStyle = '#1D3557';
+      ctx.fillRect(-player.width / 3, player.height / 6, 8, player.height / 3);
+      ctx.fillRect(player.width / 3 - 8, player.height / 6, 8, player.height / 3);
+
+      ctx.restore();
+    }
+
+    // Draw webs
+    function drawWebs() {
+      webs.forEach(web => {
+        ctx.save();
+        ctx.translate(web.x + web.width / 2, web.y + web.height / 2);
+        
+        // Web glow
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 1.5;
+
+        // Web center
+        ctx.beginPath();
+        ctx.arc(0, 0, web.width / 6, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Web lines
+        for (let i = 0; i < 8; i++) {
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(
+            (web.width / 2) * Math.cos((i * Math.PI) / 4),
+            (web.width / 2) * Math.sin((i * Math.PI) / 4)
+          );
+          ctx.stroke();
+        }
+
+        // Web rings
+        ctx.beginPath();
+        ctx.arc(0, 0, web.width / 3, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(0, 0, web.width / 2.2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      });
+    }
+
+    // Draw bonuses
+    function drawBonuses() {
+      bonuses.forEach(bonus => {
+        ctx.save();
+        ctx.translate(bonus.x + bonus.width / 2, bonus.y + bonus.height / 2);
+        
+        // Rotation and pulse
+        ctx.rotate(frameCount * 0.1);
+        const pulse = Math.sin(frameCount * 0.3) * 0.2 + 1;
+        ctx.scale(pulse, pulse);
+        
+        // Glow effect
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+        ctx.shadowBlur = 15;
+        
+        // Shield gradient
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, bonus.width / 2);
+        gradient.addColorStop(0, '#FDE68A');
+        gradient.addColorStop(0.7, '#FBBF24');
+        gradient.addColorStop(1, '#D97706');
+        ctx.fillStyle = gradient;
+        
+        // Shield shape
+        ctx.beginPath();
+        ctx.arc(0, 0, bonus.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Shield border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Shield symbol
+        ctx.fillStyle = '#1D3557';
+        ctx.beginPath();
+        ctx.moveTo(0, -bonus.width/4);
+        ctx.lineTo(-bonus.width/6, bonus.width/6);
+        ctx.lineTo(bonus.width/6, bonus.width/6);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      });
+    }
+
+    // Check collisions
+    function checkCollisions() {
+      // Check web collisions
+      for (let i = 0; i < webs.length; i++) {
+        if (collision(player, webs[i])) {
+          if (player.shield) {
+            webs.splice(i, 1);
+            score += 20;
+            updateScore();
+          } else {
+            endGame();
+            gameOver();
+            return;
+          }
+        }
+      }
+
+      // Check bonus collisions
+      for (let i = 0; i < bonuses.length; i++) {
+        if (collision(player, bonuses[i])) {
+          player.shield = true;
+          player.shieldTime = 300; // 5 seconds at 60fps
+          shieldElement.textContent = '5s';
+          shieldElement.style.color = '#fbbf24';
+          bonuses.splice(i, 1);
+          
+          // Visual effect
+          canvas.style.boxShadow = '0 0 30px rgba(251, 191, 36, 0.8)';
+          setTimeout(() => {
+            canvas.style.boxShadow = '';
+          }, 300);
+          break;
+        }
+      }
+    }
+
+    // Game over
+    function gameOver() {
+      gameRunning = false;
+      cancelAnimationFrame(animationFrame);
+      
+      finalScoreElement.textContent = score;
+      gameOverModal.classList.remove('hidden');
+      
+      // Update buttons
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      restartButton.disabled = true;
+    }
+
+    // Reset game
+    function resetGame() {
+      score = 0;
+      frameCount = 0;
+      webSpeed = webSpeedBase;
+      webs = [];
+      bonuses = [];
+      player.x = canvasWidth / 2 - 15;
+      player.shield = false;
+      player.shieldTime = 0;
+      
+      updateScore();
+      shieldElement.textContent = 'OFF';
+      shieldElement.style.color = '#fff';
+      
+      gameOverModal.classList.add('hidden');
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      drawBackground();
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (!gameRunning || gamePaused) return;
+
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      drawBackground();
+      frameCount++;
+
+      // Spawn webs and bonuses
+      if (frameCount % webSpawnRate === 0) createWeb();
+      if (frameCount % bonusSpawnRate === 0) createBonus();
+
+      movePlayer();
+      moveWebs();
+      moveBonuses();
+      drawPlayer();
+      drawWebs();
+      drawBonuses();
+      checkCollisions();
+
+      animationFrame = requestAnimationFrame(gameLoop);
+    }
+
+    // Button event handlers
+    startButton.addEventListener('click', () => {
+      if (!gameRunning) {
+        gameRunning = true;
+        gamePaused = false;
+        startButton.disabled = true;
+        pauseButton.disabled = false;
+        restartButton.disabled = false;
+        pauseButton.innerHTML = '<i class="fas fa-pause mr-2"></i> PAUSE';
+        
+        // Reset game if it's a new game
+        if (score === 0) resetGame();
+        
+        gameLoop();
+    startGame();
+
+      }
+    });
+
+    pauseButton.addEventListener('click', () => {
+      if (gameRunning) {
+        gamePaused = !gamePaused;
+        pauseButton.innerHTML = gamePaused ? 
+          '<i class="fas fa-play mr-2"></i> REPRENDRE' : 
+          '<i class="fas fa-pause mr-2"></i> PAUSE';
+        
+        if (!gamePaused) gameLoop();
+      }
+    });
+
+    restartButton.addEventListener('click', () => {
+      resetGame();
+      gameRunning = false;
+      gamePaused = false;
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      restartButton.disabled = true;
+      pauseButton.innerHTML = '<i class="fas fa-pause mr-2"></i> PAUSE';
+    });
+
+    // Modal buttons
+    modalRestart.addEventListener('click', () => {
+      resetGame();
+      gameOverModal.classList.add('hidden');
+      
+      // Start new game
+      setTimeout(() => {
+        startButton.click();
+      }, 300);
+    });
+
+    modalMenu.addEventListener('click', () => {
+      resetGame();
+      gameOverModal.classList.add('hidden');
+    });
+
+    // Keyboard events
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
+
+        // ...existing code...
+    const bgMusic = document.getElementById('bgMusic');
+    
+    // Fonction pour démarrer la partie
+    function startGame() {
+      bgMusic.currentTime = 0;
+      bgMusic.play();
+    }
+    
+    // Fonction pour terminer la partie
+    function endGame() {
+      // ...existing code...
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+      // ...existing code...
+    }
+    // ...existing code...
+
+    // Initialize game
+    drawBackground();
+  </script>
+</body>
+</html>
