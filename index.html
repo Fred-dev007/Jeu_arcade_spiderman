@@ -21,7 +21,7 @@
       background: linear-gradient(135deg, var(--spider-dark) 0%, #172a45 100%);
       color: var(--spider-light);
       overflow-x: hidden;
-      touch-action: none; /* Prevent default touch behaviors */
+      touch-action: none;
     }
     
     .title-font {
@@ -117,6 +117,22 @@
       display: none;
     }
     
+    .locked {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(100%);
+    }
+    
+    .level-up {
+      animation: levelUp 1s ease-in-out;
+    }
+    
+    @keyframes levelUp {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
     @media (max-width: 768px) {
       .mobile-controls {
         display: flex;
@@ -146,7 +162,7 @@
       }
       
       .mobile-controls {
-        gap: 20px;
+        gap: 10px;
       }
       
       .btn-primary, .btn-secondary {
@@ -180,6 +196,16 @@
           <i class="fas fa-shield-alt text-yellow-400"></i>
           <div id="shieldIndicator" class="text-sm font-medium text-white">OFF</div>
         </div>
+        
+        <div class="glass-panel rounded-xl px-4 py-3 flex items-center gap-2">
+          <i class="fas fa-bolt text-yellow-600"></i>
+          <div id="comboIndicator" class="text-sm font-medium text-white">x1</div>
+        </div>
+        
+        <div class="glass-panel rounded-xl px-4 py-3 flex items-center gap-2">
+          <i class="fas fa-star text-yellow-400"></i>
+          <div id="levelIndicator" class="text-sm font-medium text-white">1</div>
+        </div>
       </div>
     </div>
   </header>
@@ -193,8 +219,17 @@
           <button id="leftBtn" class="w-16 h-16 rounded-full bg-spider-blue flex items-center justify-center">
             <i class="fas fa-arrow-left text-2xl text-white"></i>
           </button>
+          <button id="shootBtn" class="w-16 h-16 rounded-full bg-spider-accent flex items-center justify-center">
+            <i class="fas fa-bullseye text-2xl text-white"></i>
+          </button>
+          <button id="jumpBtn" class="w-16 h-16 rounded-full bg-spider-accent flex items-center justify-center">
+            <i class="fas fa-arrow-up text-2xl text-white"></i>
+          </button>
           <button id="rightBtn" class="w-16 h-16 rounded-full bg-spider-red flex items-center justify-center">
             <i class="fas fa-arrow-right text-2xl text-white"></i>
+          </button>
+          <button id="abilityBtn" class="w-16 h-16 rounded-full bg-spider-red flex items-center justify-center">
+            <i class="fas fa-star text-2xl text-white"></i>
           </button>
         </div>
       </div>
@@ -214,6 +249,15 @@
           </button>
         </div>
       </div>
+      
+      <div class="glass-panel rounded-2xl p-5 mt-6">
+        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+          <i class="fas fa-tasks mr-2"></i> Missions
+        </h2>
+        <div id="missionss" class="space-y-3">
+          <!-- Missions will be dynamically populated -->
+        </div>
+      </div>
     </div>
     
     <div class="flex flex-col gap-6">
@@ -228,22 +272,34 @@
             <span>Utilisez les <span class="font-bold text-white">flèches gauche/droite</span> ou glissez sur l'écran pour déplacer Spider-Man</span>
           </li>
           <li class="flex items-start">
+            <i class="fas fa-arrow-up spider-icon mt-1 mr-3"></i>
+            <span>Appuyez sur <span class="font-bold text-white">flèche haut</span> ou le bouton de saut pour sauter</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-bullseye spider-icon mt-1 mr-3"></i>
+            <span>Appuyez sur <span class="font-bold text-white">espace ou T</span> ou le bouton de tir pour tirer une toile</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-star spider-icon mt-1 mr-3"></i>
+            <span>Appuyez sur <span class="font-bold text-white">A</span> ou le bouton d'aptitude pour activer la capacité spéciale</span>
+          </li>
+          <li class="flex items-start">
             <i class="fas fa-ban spider-icon mt-1 mr-3"></i>
-            <span>Évitez les <span class="font-bold text-white">toiles d'araignée</span> qui tombent</span>
+            <span>Évitez les <span class="font-bold text-white">toiles d'araignée</span> et <span class="font-bold text-white">ennemis</span> qui tombent</span>
           </li>
           <li class="flex items-start">
             <i class="fas fa-shield-alt text-yellow-400 mt-1 mr-3"></i>
             <span>Attrapez les <span class="font-bold text-yellow-300">boucliers dorés</span> pour une protection temporaire</span>
           </li>
           <li class="flex items-start">
-            <i class="fas fa-tachometer-alt spider-icon mt-1 mr-3"></i>
-            <span>Les petites toiles sont plus rapides et rapportent plus de points</span>
+            <i class="fas fa-bolt text-yellow-600 mt-1 mr-3"></i>
+            <span>Enchaînez les esquives ou bonus pour augmenter le <span class="font-bold text-white">multiplicateur de combo</span></span>
           </li>
         </ul>
         
         <div class="desktop-instructions mt-6 pt-4 border-t border-spider-blue">
           <p class="text-center text-sm opacity-75">
-            <i class="fas fa-keyboard mr-2"></i> Utilisez les touches fléchées pour jouer sur ordinateur
+            <i class="fas fa-keyboard mr-2"></i> Flèches pour bouger, Espace/T pour tirer, A pour capacité, Haut pour sauter
           </p>
         </div>
       </div>
@@ -266,9 +322,10 @@
             <i class="fas fa-user text-2xl text-red-700 mb-2"></i>
             <p class="text-sm">Scarlet</p>
           </div>
-          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="iron">
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer locked" data-skin="iron">
             <i class="fas fa-user text-2xl text-red-600 mb-2"></i>
             <p class="text-sm">Iron Spider</p>
+            <p class="text-xs text-spider-accent">Score: 5000</p>
           </div>
           <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="blue">
             <i class="fas fa-user text-2xl text-blue-600 mb-2"></i>
@@ -278,9 +335,10 @@
             <i class="fas fa-user text-2xl text-green-600 mb-2"></i>
             <p class="text-sm">Vert Venom</p>
           </div>
-          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="purple">
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer locked" data-skin="purple">
             <i class="fas fa-user text-2xl text-purple-600 mb-2"></i>
             <p class="text-sm">Prowler</p>
+            <p class="text-xs text-spider-accent">Score: 10000</p>
           </div>
           <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="white">
             <i class="fas fa-user text-2xl text-white mb-2"></i>
@@ -289,63 +347,58 @@
         </div>
       </div>
       
-      <div class="glass-panel rounded-2xl p-_EMPTY
-      <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
-        <i class="fas fa-trophy mr-2"></i> Classement
-      </h2>
-      
-      <div class="space-y-3">
-        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-          <div class="flex items-center">
-            <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
-              <span class="text-xs font-bold text-spider-dark">1</span>
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+          <i class="fas fa-trophy mr-2"></i> Classement
+        </h2>
+        
+        <div class="space-y-3">
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">1</span>
+              </div>
+              <span id="highScorePlayer">Votre Meilleur</span>
             </div>
-            <span>SpideyFan99</span>
+            <span id="highScoreValue" class="font-bold">0</span>
           </div>
-          <span class="font-bold">24,580</span>
-        </div>
-        
-        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-          <div class="flex items-center">
-            <div class="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center mr-3">
-              <span class="text-xs font-bold text-spider-dark">2</span>
+          
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">1</span>
+              </div>
+              <span>SpideyFan99</span>
             </div>
-            <span>WebSlinger</span>
+            <span class="font-bold">24,580</span>
           </div>
-          <span class="font-bold">21,340</span>
-        </div>
-        
-        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-          <div class="flex items-center">
-            <div class="w-6 h-6 rounded-full bg-amber-700 flex items-center justify-center mr-3">
-              <span class="text-xs font-bold text-spider-dark">3</span>
+          
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">2</span>
+              </div>
+              <span>WebSlinger</span>
             </div>
-            <span>MJ_4ever</span>
+            <span class="font-bold">21,340</span>
           </div>
-          <span class="font-bold">18,750</span>
+          
+          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-amber-700 flex items-center justify-center mr-3">
+                <span class="text-xs font-bold text-spider-dark">3</span>
+              </div>
+              <span>MJ_4ever</span>
+            </div>
+            <span class="font-bold">18,750</span>
+          </div>
         </div>
         
-        <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
-          <div class="flex items-center">
-            <span class="w-6 text-center mr-3">4</span>
-            <span>VenomFan</span>
-          </div>
-          <span>15,220</span>
+        <div class="text-center mt-4">
+          <button class="text-spider-accent text-sm font-medium">
+            Voir le classement complet <i class="fas fa-arrow-right ml-1"></i>
+          </button>
         </div>
-        
-        <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
-          <div class="flex items-center">
-            <span class="w-6 text-center mr-3">5</span>
-            <span>GwenStacy</span>
-          </div>
-          <span>12,450</span>
-        </div>
-      </div>
-      
-      <div class="text-center mt-4">
-        <button class="text-spider-accent text-sm font-medium">
-          Voir le classement complet <i class="fas fa-arrow-right ml-1"></i>
-        </button>
       </div>
     </div>
   </div>
@@ -356,6 +409,7 @@
         <i class="fas fa-skull text-4xl text-red-500 mb-4"></i>
         <h2 class="text-3xl font-bold title-font mb-2">Game Over!</h2>
         <p class="text-xl mb-2">Votre score: <span id="finalScore" class="font-bold text-white">0</span></p>
+        <p class="text-xl mb-2">Meilleur score: <span id="highScoreModal" class="font-bold text-white">0</span></p>
         <p class="text-spider-accent mb-6">Essayez de battre votre record!</p>
         
         <div class="grid grid-cols-2 gap-4">
@@ -369,7 +423,23 @@
       </div>
     </div>
   </div>
+  
+  <div id="unlockModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="glass-panel rounded-2xl p-8 max-w-md w-full mx-4">
+      <div class="text-center">
+        <i class="fas fa-unlock text-4xl text-yellow-400 mb-4"></i>
+        <h2 class="text-3xl font-bold title-font mb-2">Nouveau Skin Débloqué!</h2>
+        <p id="unlockedSkinName" class="text-xl mb-6 text-spider-accent"></p>
+        <button id="closeUnlockModal" class="btn-primary py-3 rounded-xl font-bold">
+          <i class="fas fa-check mr-2"></i> Super !
+        </button>
+      </div>
+    </div>
+  </div>
+  
   <audio id="bgMusic" src="spiderman.mp3" loop></audio>
+  <!-- <audio id="bonusSound" src="bonus.mp3"></audio> -->
+  <!-- <audio id="gameOverSound" src="gameover.mp3"></audio> -->
   
   <footer class="mt-12 text-center text-slate-400 text-sm max-w-6xl w-full">
     <div class="glass-panel rounded-xl p-4">
@@ -401,17 +471,31 @@
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('scoreValue');
     const shieldElement = document.getElementById('shieldIndicator');
+    const comboElement = document.getElementById('comboIndicator');
+    const levelElement = document.getElementById('levelIndicator');
     const startButton = document.getElementById('startButton');
     const pauseButton = document.getElementById('pauseButton');
     const restartButton = document.getElementById('restartButton');
     const leftBtn = document.getElementById('leftBtn');
     const rightBtn = document.getElementById('rightBtn');
+    const shootBtn = document.getElementById('shootBtn');
+    const jumpBtn = document.getElementById('jumpBtn');
+    const abilityBtn = document.getElementById('abilityBtn');
     const gameOverModal = document.getElementById('gameOverModal');
     const finalScoreElement = document.getElementById('finalScore');
+    const highScoreModal = document.getElementById('highScoreModal');
     const modalRestart = document.getElementById('modalRestart');
     const modalMenu = document.getElementById('modalMenu');
+    const unlockModal = document.getElementById('unlockModal');
+    const unlockedSkinName = document.getElementById('unlockedSkinName');
+    const closeUnlockModal = document.getElementById('closeUnlockModal');
     const bgMusic = document.getElementById('bgMusic');
+    const bonusSound = document.getElementById('bonusSound');
+    const gameOverSound = document.getElementById('gameOverSound');
     const skinSelector = document.getElementById('skinSelector');
+    const missionsContainer = document.getElementById('missions');
+    const highScorePlayer = document.getElementById('highScorePlayer');
+    const highScoreValue = document.getElementById('highScoreValue');
 
     // Game variables
     let canvasWidth = canvas.width;
@@ -420,51 +504,107 @@
     let gamePaused = false;
     let animationFrame;
     let score = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
     let frameCount = 0;
     let gameSpeedIncrease = 0.1;
+    let comboMultiplier = 1;
+    let comboCount = 0;
+    let comboTimer = 0;
+    let level = 1;
+    let particles = [];
+    let cameraShake = 0;
+    let shakeDuration = 0;
 
     // Player (Spider-Man)
     const player = {
       x: canvasWidth / 2 - 15,
-      y: canvasHeight - 70, // Adjusted for better visibility
+      y: canvasHeight - 70,
       width: 30,
       height: 50,
       speed: 7,
       dx: 0,
       shield: false,
       shieldTime: 0,
-      state: 'idle', // idle, left, right
+      state: 'idle',
       frame: 0,
       frameCount: 0,
       frameDelay: 8,
-      skin: 'classic' // Default skin
+      skin: 'classic',
+      webAmmo: 3,
+      isJumping: false,
+      jumpVelocity: 0,
+      jumpGravity: 0.5,
+      jumpPower: -12,
+      slowed: false,
+      slowTime: 0,
+      speedBoost: false,
+      speedBoostTime: 0,
+      scoreMultiplier: false,
+      scoreMultiplierTime: 0,
+      abilityActive: false,
+      abilityCooldown: 0,
+      abilityDuration: 0
     };
 
-    // Skin definitions
+    // Skin definitions with special abilities
     const skins = {
-      classic: { primary: '#E63946', secondary: '#1D3557', web: '#E63946' },
-      black: { primary: '#000000', secondary: '#333333', web: '#FFFFFF' },
-      scarlet: { primary: '#8B0000', secondary: '#4682B4', web: '#FFD700' },
-      iron: { primary: '#B22222', secondary: '#FFD700', web: '#4682B4' },
-      blue: { primary: '#1E90FF', secondary: '#000080', web: '#FFFFFF' },
-      green: { primary: '#228B22', secondary: '#006400', web: '#FFD700' },
-      purple: { primary: '#4B0082', secondary: '#800080', web: '#FFFFFF' },
-      white: { primary: '#F5F5F5', secondary: '#A9A9A9', web: '#FF4500' }
+      classic: { primary: '#E63946', secondary: '#1D3557', web: '#E63946', ability: 'none', unlocked: true },
+      black: { primary: '#000000', secondary: '#333333', web: '#FFFFFF', ability: 'speedBoost', unlocked: true },
+      scarlet: { primary: '#8B0000', secondary: '#4682B4', web: '#FFD700', ability: 'longShield', unlocked: true },
+      iron: { primary: '#B22222', secondary: '#FFD700', web: '#4682B4', ability: 'strongWeb', unlocked: false },
+      blue: { primary: '#1E90FF', secondary: '#000080', web: '#FFFFFF', ability: 'doubleJump', unlocked: true },
+      green: { primary: '#228B22', secondary: '#006400', web: '#FFD700', ability: 'extraWeb', unlocked: true },
+      purple: { primary: '#4B0082', secondary: '#800080', web: '#FFFFFF', ability: 'scoreBurst', unlocked: false },
+      white: { primary: '#F5F5F5', secondary: '#A9A9A9', web: '#FF4500', ability: 'invincibility', unlocked: true }
+    };
+
+    // Skin unlock thresholds
+    const skinUnlocks = {
+      iron: 5000,
+      purple: 10000
     };
 
     // Web sizes and properties
     const webSizes = [
-      { size: 'small', width: 15, height: 15, speed: 5, score: 15 },
-      { size: 'medium', width: 25, height: 25, speed: 3, score: 10 },
-      { size: 'large', width: 40, height: 40, speed: 2, score: 5 }
+      { size: 'small', width: 15, height: 15, speed: 5, score: 15, type: 'normal' },
+      { size: 'medium', width: 25, height: 25, speed: 3, score: 10, type: 'normal' },
+      { size: 'large', width: 40, height: 40, speed: 2, score: 5, type: 'normal' },
+      { size: 'sticky', width: 30, height: 30, speed: 2.5, score: 10, type: 'sticky' },
+      { size: 'destructible', width: 35, height: 35, speed: 2, score: 20, type: 'destructible' }
     ];
     let webs = [];
     let webSpeed = 3;
     let webSpawnRate = 50;
 
-    // Bonuses (shields)
+    // Enemies
+    let enemies = [];
+    const enemySpawnRate = 200;
+
+    // Boss
+    let boss = null;
+    let bossSpawnScore = 10000;
+
+    // Bonuses
     let bonuses = [];
+    const bonusTypes = [
+      { type: 'shield', width: 22, height: 22, speed: 3 },
+      { type: 'speed', width: 22, height: 22, speed: 3 },
+      { type: 'multiplier', width: 22, height: 22, speed: 3 },
+      { type: 'web', width: 22, height: 22, speed: 3 }
+    ];
     const bonusSpawnRate = 1000;
+
+    // Web shots
+    let webShots = [];
+
+    // Missions
+    const missions = [
+      { id: 1, description: "Attrapez 10 boucliers dorés", target: 10, current: 0, type: 'shield', reward: 500 },
+      { id: 2, description: "Survivez 2 minutes sans bouclier", target: 7200, current: 0, type: 'surviveNoShield', reward: 1000 },
+      { id: 3, description: "Atteignez 10,000 points avec Symbiote", target: 10000, current: 0, type: 'scoreWithSkin', skin: 'black', reward: 2000 }
+    ];
+    let shieldCount = 0;
+    let noShieldTimer = 0;
 
     // Touch control variables
     let touchStartX = 0;
@@ -474,10 +614,10 @@
     // Adjust canvas size for mobile
     function resizeCanvas() {
       if (window.innerWidth < 768) {
-        const size = Math.min(window.innerWidth - 40, 400); // Cap size for better visibility
+        const size = Math.min(window.innerWidth - 40, 400);
         canvas.width = size;
         canvas.height = size;
-        player.width = size * 0.075; // Scale player size
+        player.width = size * 0.075;
         player.height = size * 0.125;
       } else {
         canvas.width = 600;
@@ -488,11 +628,42 @@
       canvasWidth = canvas.width;
       canvasHeight = canvas.height;
       player.x = canvasWidth / 2 - player.width / 2;
-      player.y = canvasHeight - player.height - 20; // Ensure player is above bottom edge
+      player.y = canvasHeight - player.height - 20;
     }
     
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+
+    // Load high score and unlocked skins
+    function loadGameData() {
+      highScore = localStorage.getItem('highScore') || 0;
+      highScoreValue.textContent = highScore;
+      const unlockedSkins = JSON.parse(localStorage.getItem('unlockedSkins')) || {};
+      for (let skin in unlockedSkins) {
+        if (skins[skin]) skins[skin].unlocked = unlockedSkins[skin];
+      }
+      updateSkinSelector();
+      updateMissions();
+    }
+
+    // Save high score
+    function saveHighScore() {
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        highScoreValue.textContent = highScore;
+        highScorePlayer.textContent = 'Votre Meilleur';
+      }
+    }
+
+    // Save unlocked skins
+    function saveUnlockedSkins() {
+      const unlockedSkins = {};
+      for (let skin in skins) {
+        unlockedSkins[skin] = skins[skin].unlocked;
+      }
+      localStorage.setItem('unlockedSkins', JSON.stringify(unlockedSkins));
+    }
 
     // Create a web
     function createWeb() {
@@ -502,23 +673,88 @@
         y: 0,
         width: webSizes[sizeIndex].width,
         height: webSizes[sizeIndex].height,
-        speed: webSizes[sizeIndex].speed + (score / 1000),
+        speed: webSizes[sizeIndex].speed + (score / 1000) * level,
         score: webSizes[sizeIndex].score,
-        size: webSizes[sizeIndex].size
+        size: webSizes[sizeIndex].size,
+        type: webSizes[sizeIndex].type
       };
       webs.push(web);
     }
 
-    // Create a bonus shield
-    function createBonus() {
-      const bonus = {
-        x: Math.random() * (canvasWidth - 20),
+    // Create an enemy
+    function createEnemy() {
+      const enemy = {
+        x: Math.random() * (canvasWidth - 30),
         y: 0,
-        width: 22,
-        height: 22,
-        speed: 3
+        width: 30,
+        height: 30,
+        speed: 4 * level,
+        dx: (Math.random() > 0.5 ? 1 : -1) * 2,
+        score: 25
+      };
+      enemies.push(enemy);
+    }
+
+    // Create a boss
+    function createBoss() {
+      boss = {
+        x: canvasWidth / 2 - 50,
+        y: 50,
+        width: 100,
+        height: 100,
+        speed: 2,
+        dx: 2,
+        health: 50,
+        score: 1000,
+        attackTimer: 0,
+        attackInterval: 120
+      };
+    }
+
+    // Create a bonus
+    function createBonus() {
+      const typeIndex = Math.floor(Math.random() * bonusTypes.length);
+      const bonus = {
+        x: Math.random() * (canvasWidth - bonusTypes[typeIndex].width),
+        y: 0,
+        width: bonusTypes[typeIndex].width,
+        height: bonusTypes[typeIndex].height,
+        speed: bonusTypes[typeIndex].speed * level,
+        type: bonusTypes[typeIndex].type
       };
       bonuses.push(bonus);
+    }
+
+    // Create a web shot
+    function createWebShot() {
+      if (player.webAmmo > 0) {
+        player.webAmmo--;
+        const isStrongWeb = player.abilityActive && skins[player.skin].ability === 'strongWeb';
+        const webShot = {
+          x: player.x + player.width / 2 - 2.5,
+          y: player.y,
+          width: isStrongWeb ? 10 : 5,
+          height: isStrongWeb ? 20 : 10,
+          speed: isStrongWeb ? -15 : -10,
+          damage: isStrongWeb ? 2 : 1
+        };
+        webShots.push(webShot);
+      }
+    }
+
+    // Create particles
+    function createParticles(x, y, count, color) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5,
+          size: Math.random() * 5 + 2,
+          life: 30,
+          color: color
+        });
+      }
     }
 
     // Detect collision
@@ -534,8 +770,18 @@
     // Input controls
     function keyDownHandler(e) {
       if (gameRunning && !gamePaused) {
+        e.preventDefault();
         if (e.key === 'ArrowRight') player.dx = player.speed;
         else if (e.key === 'ArrowLeft') player.dx = -player.speed;
+        else if (e.key === 'ArrowUp' && !player.isJumping) {
+          player.isJumping = true;
+          player.jumpVelocity = player.jumpPower;
+          if (player.abilityActive && skins[player.skin].ability === 'doubleJump') {
+            player.jumpVelocity *= 1.5;
+          }
+        }
+        else if (e.key === ' ' || e.key === 't' || e.key === 'T') createWebShot();
+        else if (e.key === 'a' || e.key === 'A') activateAbility();
       }
     }
 
@@ -559,7 +805,28 @@
     rightBtn.addEventListener('mouseup', () => player.dx = 0);
     rightBtn.addEventListener('touchend', () => player.dx = 0);
     
-    [leftBtn, rightBtn].forEach(btn => {
+    shootBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameRunning && !gamePaused) createWebShot();
+    });
+    
+    jumpBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameRunning && !gamePaused && !player.isJumping) {
+        player.isJumping = true;
+        player.jumpVelocity = player.jumpPower;
+        if (player.abilityActive && skins[player.skin].ability === 'doubleJump') {
+          player.jumpVelocity *= 1.5;
+        }
+      }
+    });
+    
+    abilityBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameRunning && !gamePaused) activateAbility();
+    });
+    
+    [leftBtn, rightBtn, shootBtn, jumpBtn, abilityBtn].forEach(btn => {
       btn.addEventListener('contextmenu', e => e.preventDefault());
     });
 
@@ -578,7 +845,7 @@
       if (isTouching && gameRunning && !gamePaused) {
         touchCurrentX = e.touches[0].clientX;
         const deltaX = touchCurrentX - touchStartX;
-        player.dx = (deltaX / 10) * player.speed; // Smooth sliding
+        player.dx = (deltaX / 10) * player.speed;
         touchStartX = touchCurrentX;
       }
     });
@@ -589,11 +856,76 @@
       player.dx = 0;
     });
 
+    // Activate special ability
+    function activateAbility() {
+      if (player.abilityCooldown <= 0 && !player.abilityActive) {
+        player.abilityActive = true;
+        player.abilityDuration = 300;
+        player.abilityCooldown = 600;
+        const ability = skins[player.skin].ability;
+        if (ability === 'speedBoost') {
+          player.speedBoost = true;
+          player.speedBoostTime = 300;
+          player.speed = 12;
+        } else if (ability === 'longShield' && player.shield) {
+          player.shieldTime += 300;
+        } else if (ability === 'scoreBurst') {
+          score += 1000;
+          updateScore();
+        } else if (ability === 'invincibility') {
+          player.shield = true;
+          player.shieldTime = 600;
+        }
+        createParticles(player.x + player.width / 2, player.y + player.height / 2, 20, '#FFD700');
+      }
+    }
+
     // Update player position
     function movePlayer() {
+      if (player.slowed) {
+        player.slowTime--;
+        if (player.slowTime <= 0) {
+          player.slowed = false;
+          player.speed = player.speedBoost ? 10 : 7;
+        }
+      }
+      if (player.speedBoost) {
+        player.speedBoostTime--;
+        if (player.speedBoostTime <= 0) {
+          player.speedBoost = false;
+          player.speed = player.slowed ? 3 : 7;
+        }
+      }
+      if (player.scoreMultiplier) {
+        player.scoreMultiplierTime--;
+        if (player.scoreMultiplierTime <= 0) {
+          player.scoreMultiplier = false;
+          comboMultiplier = 1;
+          updateCombo();
+        }
+      }
+      if (player.abilityActive) {
+        player.abilityDuration--;
+        if (player.abilityDuration <= 0) {
+          player.abilityActive = false;
+        }
+      }
+      if (player.abilityCooldown > 0) {
+        player.abilityCooldown--;
+      }
       player.x += player.dx;
       if (player.x < 0) player.x = 0;
       if (player.x + player.width > canvasWidth) player.x = canvasWidth - player.width;
+
+      if (player.isJumping) {
+        player.y += player.jumpVelocity;
+        player.jumpVelocity += player.jumpGravity;
+        if (player.y >= canvasHeight - player.height - 20) {
+          player.y = canvasHeight - player.height - 20;
+          player.isJumping = false;
+          player.jumpVelocity = 0;
+        }
+      }
 
       if (player.shield) {
         player.shieldTime--;
@@ -614,20 +946,96 @@
         web.y += web.speed;
         if (web.y > canvasHeight) {
           webs.splice(index, 1);
-          score += web.score;
+          score += web.score * comboMultiplier;
+          comboCount++;
+          updateCombo();
           webSpeed += gameSpeedIncrease;
           updateScore();
         }
       });
     }
 
+    // Update enemies
+    function moveEnemies() {
+      enemies.forEach((enemy, index) => {
+        enemy.y += enemy.speed;
+        enemy.x += enemy.dx;
+        if (enemy.x <= 0 || enemy.x + enemy.width >= canvasWidth) enemy.dx = -enemy.dx;
+        if (enemy.y > canvasHeight) enemies.splice(index, 1);
+      });
+    }
+
+    // Update boss
+    function moveBoss() {
+      if (boss) {
+        boss.x += boss.dx;
+        if (boss.x <= 0 || boss.x + boss.width >= canvasWidth) boss.dx = -boss.dx;
+        boss.attackTimer++;
+        if (boss.attackTimer >= boss.attackInterval) {
+          boss.attackTimer = 0;
+          createBossProjectiles();
+        }
+        if (boss.health <= 0) {
+          score += boss.score * comboMultiplier;
+          updateScore();
+          boss = null;
+          createParticles(boss.x + boss.width / 2, boss.y + boss.height / 2, 50, '#FF0000');
+        }
+      }
+    }
+
+    // Create boss projectiles
+    function createBossProjectiles() {
+      if (boss) {
+        const patterns = [
+          () => [
+            { x: boss.x + boss.width / 2, y: boss.y + boss.height, speed: 5, dx: 0 },
+            { x: boss.x + boss.width / 2 - 20, y: boss.y + boss.height, speed: 5, dx: -1 },
+            { x: boss.x + boss.width / 2 + 20, y: boss.y + boss.height, speed: 5, dx: 1 }
+          ],
+          () => [
+            { x: boss.x + boss.width / 2, y: boss.y + boss.height, speed: 4, dx: -2 },
+            { x: boss.x + boss.width / 2, y: boss.y + boss.height, speed: 4, dx: 2 }
+          ]
+        ];
+        const pattern = patterns[Math.floor(Math.random() * patterns.length)]();
+        pattern.forEach(proj => {
+          enemies.push({
+            x: proj.x,
+            y: proj.y,
+            width: 20,
+            height: 20,
+            speed: proj.speed,
+            dx: proj.dx,
+            score: 50
+          });
+        });
+      }
+    }
+
     // Update bonuses
     function moveBonuses() {
       bonuses.forEach((bonus, index) => {
         bonus.y += bonus.speed;
-        if (bonus.y > canvasHeight) {
-          bonuses.splice(index, 1);
-        }
+        if (bonus.y > canvasHeight) bonuses.splice(index, 1);
+      });
+    }
+
+    // Update web shots
+    function moveWebShots() {
+      webShots.forEach((shot, index) => {
+        shot.y += shot.speed;
+        if (shot.y < 0) webShots.splice(index, 1);
+      });
+    }
+
+    // Update particles
+    function updateParticles() {
+      particles.forEach((particle, index) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life--;
+        if (particle.life <= 0) particles.splice(index, 1);
       });
     }
 
@@ -638,9 +1046,102 @@
       setTimeout(() => {
         scoreElement.parentElement.parentElement.classList.remove('scale-105');
       }, 100);
+      updateLevel();
+      checkSkinUnlocks();
+      // updateMissionsProgress();
     }
 
-    // Draw background
+    // Update level
+    function updateLevel() {
+      const newLevel = Math.floor(score / 5000) + 1;
+      if (newLevel > level) {
+        level = newLevel;
+        levelElement.textContent = level;
+        levelElement.parentElement.classList.add('level-up');
+        setTimeout(() => {
+          levelElement.parentElement.classList.remove('level-up');
+        }, 1000);
+        webSpeed += 0.5;
+        createParticles(canvasWidth / 2, canvasHeight / 2, 30, '#FFD700');
+      }
+    }
+
+    // Check skin unlocks
+    function checkSkinUnlocks() {
+      for (let skin in skinUnlocks) {
+        if (!skins[skin].unlocked && score >= skinUnlocks[skin]) {
+          skins[skin].unlocked = true;
+          saveUnlockedSkins();
+          unlockedSkinName.textContent = document.querySelector(`[data-skin="${skin}"] p`).textContent;
+          unlockModal.classList.remove('hidden');
+          updateSkinSelector();
+        }
+      }
+    }
+
+    // Update skin selector
+    function updateSkinSelector() {
+      skinSelector.querySelectorAll('.feature-card').forEach(card => {
+        const skin = card.dataset.skin;
+        if (!skins[skin].unlocked) {
+          card.classList.add('locked');
+        } else {
+          card.classList.remove('locked');
+        }
+      });
+    }
+
+    // Update missions
+    // function updateMissions() {
+    //   missionsContainer.innerHTML = '';
+    //   missions.forEach(mission => {
+    //     const progress = mission.current / mission.target * 100;
+    //     const missionElement = document.createElement('div');
+    //     missionElement.className = 'glass-panel p-3 rounded-lg';
+    //     missionElement.innerHTML = `
+    //       <div class="flex items-center justify-between">
+    //         <span>${mission.description}</span>
+    //         <span>${mission.current}/${mission.target}</span>
+    //       </div>
+    //       <div class="w-full bg-gray-700 h-2 rounded-full mt-2">
+    //         <div class="bg-spider-accent h-2 rounded-full" style="width: ${progress}%"></div>
+    //       </div>
+    //     `;
+    //     missionsContainer.appendChild(missionElement);
+    //   });
+    // }
+
+    // Update missions progress
+    // function updateMissionsProgress() {
+    //   missions.forEach(mission => {
+    //     if (mission.type === 'scoreWithSkin' && player.skin === mission.skin) {
+    //       mission.current = Math.min(score, mission.target);
+    //     }
+    //   });
+    //   updateMissions();
+    // }
+
+    // Update combo display
+    function updateCombo() {
+      if (comboCount >= 3) {
+        comboMultiplier = Math.floor(comboCount / 3) + 1;
+        comboTimer = 180;
+      }
+      if (comboTimer > 0) {
+        comboTimer--;
+        if (comboTimer <= 0 && !player.scoreMultiplier) {
+          comboCount = 0;
+          comboMultiplier = 1;
+        }
+      }
+      comboElement.textContent = `x${comboMultiplier}`;
+      comboElement.parentElement.classList.add('scale-105');
+      setTimeout(() => {
+        comboElement.parentElement.classList.remove('scale-105');
+      }, 100);
+    }
+
+    // Draw background with moving clouds
     function drawBackground() {
       const gradient = ctx.createRadialGradient(
         canvasWidth/2, canvasHeight/2, 0,
@@ -650,6 +1151,15 @@
       gradient.addColorStop(1, '#0a1629');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // Moving clouds
+      ctx.fillStyle = 'rgba(147, 197, 253, 0.3)';
+      for (let i = 0; i < 5; i++) {
+        const cloudX = (frameCount * 0.5 + i * 200) % (canvasWidth + 100) - 50;
+        ctx.beginPath();
+        ctx.arc(cloudX, 50 + i * 20, 30, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.fillStyle = 'rgba(15, 25, 45, 0.7)';
       const buildingHeight = canvasHeight * 0.15;
@@ -678,23 +1188,24 @@
       ctx.globalAlpha = 1;
     }
 
-    // Draw player
+    // Draw player with enhanced animations
     function drawPlayer() {
       ctx.save();
+      if (cameraShake > 0) {
+        ctx.translate((Math.random() - 0.5) * cameraShake, (Math.random() - 0.5) * cameraShake);
+      }
       ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
 
-      // Update animation state
       if (player.dx > 0) player.state = 'right';
       else if (player.dx < 0) player.state = 'left';
-      else player.state = 'idle';
+      else player.state = player.isJumping ? 'jump' : 'idle';
       
       player.frameCount++;
       if (player.frameCount >= player.frameDelay) {
-        player.frame = (player.frame + 1) % 3; // Three frames for smoother animation
+        player.frame = (player.frame + 1) % 4;
         player.frameCount = 0;
       }
 
-      // Shield effect
       if (player.shield) {
         const pulseSize = Math.sin(frameCount * 0.2) * 3 + player.width;
         ctx.strokeStyle = 'rgba(251, 191, 36, 0.8)';
@@ -709,22 +1220,42 @@
         ctx.stroke();
       }
 
-      // Dynamic tilt and scale for animation
+      if (player.speedBoost) {
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.6)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, player.width / 1.5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (player.scoreMultiplier) {
+        ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, player.width / 1.2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (player.abilityActive) {
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, player.width / 1.1, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
       const tilt = player.state === 'right' ? -0.2 : player.state === 'left' ? 0.2 : 0;
-      const scale = player.frame === 1 ? 1.05 : 1; // Slight bounce effect
+      const scale = player.frame === 1 ? 1.05 : player.frame === 3 ? 0.95 : 1;
       ctx.rotate(tilt);
       ctx.scale(scale, scale);
 
-      // Colors based on skin
       const colors = skins[player.skin];
 
-      // Head with web pattern
       ctx.fillStyle = colors.primary;
       ctx.beginPath();
       ctx.arc(0, -player.height / 3, player.width / 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Web pattern on head
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
       ctx.lineWidth = 0.7;
       for (let i = 0; i < 8; i++) {
@@ -737,9 +1268,8 @@
         ctx.stroke();
       }
 
-      // Eyes with dynamic shape
       ctx.fillStyle = 'white';
-      const eyeOffset = player.frame === 0 ? 0 : player.frame === 1 ? 1 : -1;
+      const eyeOffset = player.frame === 0 ? 0 : player.frame === 1 ? 1 : player.frame === 2 ? -1 : 0;
       ctx.beginPath();
       ctx.ellipse(-player.width / 8 + eyeOffset, -player.height / 3 - 2, 6, 4, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -747,11 +1277,9 @@
       ctx.ellipse(player.width / 8 - eyeOffset, -player.height / 3 - 2, 6, 4, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Body with web pattern
       ctx.fillStyle = colors.secondary;
       ctx.fillRect(-player.width / 3, -player.height / 6, player.width * 2 / 3, player.height / 2);
       
-      // Web pattern on body
       ctx.strokeStyle = colors.web;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -763,7 +1291,6 @@
       ctx.lineTo(0, -player.height / 6 + player.height / 2);
       ctx.stroke();
 
-      // Spider logo with animation
       ctx.fillStyle = colors.web;
       ctx.beginPath();
       const logoScale = player.frame === 1 ? 1.1 : 1;
@@ -780,14 +1307,12 @@
       ctx.fill();
       ctx.scale(1 / logoScale, 1 / logoScale);
 
-      // Legs with animation
-      const legOffset = player.frame === 0 ? 0 : player.frame === 1 ? 2 : -2;
+      const legOffset = player.frame === 0 ? 0 : player.frame === 1 ? 2 : player.frame === 2 ? -2 : 1;
       ctx.fillStyle = colors.secondary;
       ctx.fillRect(-player.width / 3 + legOffset, player.height / 6, 8, player.height / 3);
       ctx.fillRect(player.width / 3 - 8 - legOffset, player.height / 6, 8, player.height / 3);
 
-      // Web-shooting effect
-      if (player.state !== 'idle') {
+      if (player.state === 'right' || player.state === 'left') {
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -796,6 +1321,15 @@
           (player.state === 'right' ? 60 : -60),
           -player.height / 6 - Math.sin(frameCount * 0.3) * 15
         );
+        ctx.stroke();
+      }
+
+      if (player.state === 'jump') {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, player.height / 2);
+        ctx.lineTo(0, player.height / 2 + 20);
         ctx.stroke();
       }
 
@@ -811,9 +1345,9 @@
         const glowIntensity = web.size === 'small' ? 6 : web.size === 'medium' ? 8 : 10;
         const lineWidth = web.size === 'small' ? 1 : web.size === 'medium' ? 1.5 : 2;
         
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+        ctx.shadowColor = web.type === 'sticky' ? 'rgba(0, 255, 0, 0.6)' : web.type === 'destructible' ? 'rgba(255, 165, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)';
         ctx.shadowBlur = glowIntensity;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.strokeStyle = web.type === 'sticky' ? 'rgba(0, 255, 0, 0.9)' : web.type === 'destructible' ? 'rgba(255, 165, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)';
         ctx.lineWidth = lineWidth;
 
         ctx.beginPath();
@@ -848,11 +1382,85 @@
           ctx.beginPath();
           ctx.arc(0, 0, web.width / 1.8, 0, Math.PI * 2);
           ctx.stroke();
+        } else if (web.type === 'sticky') {
+          ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+          ctx.beginPath();
+          ctx.arc(0, 0, web.width / 3, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (web.type === 'destructible') {
+          ctx.fillStyle = 'rgba(255, 165, 0, 0.3)';
+          ctx.beginPath();
+          ctx.arc(0, 0, web.width / 3, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         ctx.shadowBlur = 0;
         ctx.restore();
       });
+    }
+
+    // Draw enemies
+    function drawEnemies() {
+      enemies.forEach(enemy => {
+        ctx.save();
+        ctx.translate(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
+        
+        ctx.shadowColor = 'rgba(255, 0, 0, 0.6)';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+        
+        ctx.beginPath();
+        ctx.moveTo(0, -enemy.height / 2);
+        ctx.lineTo(enemy.width / 2, enemy.height / 2);
+        ctx.lineTo(-enemy.width / 2, enemy.height / 2);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(-enemy.width / 4, -enemy.height / 4, 3, 0, Math.PI * 2);
+        ctx.arc(enemy.width / 4, -enemy.height / 4, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      });
+    }
+
+    // Draw boss
+    function drawBoss() {
+      if (boss) {
+        ctx.save();
+        ctx.translate(boss.x + boss.width / 2, boss.y + boss.height / 2);
+        
+        ctx.shadowColor = 'rgba(128, 0, 128, 0.8)';
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = 'rgba(128, 0, 128, 0.9)';
+        
+        ctx.beginPath();
+        ctx.arc(0, 0, boss.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(-boss.width / 4, -boss.height / 4, 8, 0, Math.PI * 2);
+        ctx.arc(boss.width / 4, -boss.height / 4, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(0, 0, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        ctx.restore();
+        
+        // Health bar
+        ctx.fillStyle = 'red';
+        ctx.fillRect(boss.x, boss.y - 20, boss.width, 10);
+        ctx.fillStyle = 'green';
+        ctx.fillRect(boss.x, boss.y - 20, boss.width * (boss.health / 50), 10);
+      }
     }
 
     // Draw bonuses
@@ -865,13 +1473,27 @@
         const pulse = Math.sin(frameCount * 0.3) * 0.2 + 1;
         ctx.scale(pulse, pulse);
         
-        ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+        ctx.shadowColor = bonus.type === 'shield' ? 'rgba(251, 191, 36, 0.8)' : bonus.type === 'speed' ? 'rgba(34, 197, 94, 0.8)' : bonus.type === 'multiplier' ? 'rgba(236, 72, 153, 0.8)' : 'rgba(255, 255, 255, 0.8)';
         ctx.shadowBlur = 15;
         
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, bonus.width / 2);
-        gradient.addColorStop(0, '#FDE68A');
-        gradient.addColorStop(0.7, '#FBBF24');
-        gradient.addColorStop(1, '#D97706');
+        if (bonus.type === 'shield') {
+          gradient.addColorStop(0, '#FDE68A');
+          gradient.addColorStop(0.7, '#FBBF24');
+          gradient.addColorStop(1, '#D97706');
+        } else if (bonus.type === 'speed') {
+          gradient.addColorStop(0, '#86EFAC');
+          gradient.addColorStop(0.7, '#22C55E');
+          gradient.addColorStop(1, '#15803D');
+        } else if (bonus.type === 'multiplier') {
+          gradient.addColorStop(0, '#F9A8D4');
+          gradient.addColorStop(0.7, '#EC4899');
+          gradient.addColorStop(1, '#BE185D');
+        } else {
+          gradient.addColorStop(0, '#FFFFFF');
+          gradient.addColorStop(0.7, '#D1D5DB');
+          gradient.addColorStop(1, '#6B7280');
+        }
         ctx.fillStyle = gradient;
         
         ctx.beginPath();
@@ -884,10 +1506,29 @@
         
         ctx.fillStyle = '#1D3557';
         ctx.beginPath();
-        ctx.moveTo(0, -bonus.width/4);
-        ctx.lineTo(-bonus.width/6, bonus.width/6);
-        ctx.lineTo(bonus.width/6, bonus.width/6);
-        ctx.closePath();
+        if (bonus.type === 'shield') {
+          ctx.moveTo(0, -bonus.width/4);
+          ctx.lineTo(-bonus.width/6, bonus.width/6);
+          ctx.lineTo(bonus.width/6, bonus.width/6);
+          ctx.closePath();
+        } else if (bonus.type === 'speed') {
+          ctx.moveTo(0, -bonus.width/4);
+          ctx.lineTo(bonus.width/4, 0);
+          ctx.lineTo(0, bonus.width/4);
+          ctx.lineTo(-bonus.width/4, 0);
+          ctx.closePath();
+        } else if (bonus.type === 'multiplier') {
+          ctx.font = '12px Orbitron';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('x2', 0, 0);
+        } else {
+          ctx.moveTo(-bonus.width/4, 0);
+          ctx.lineTo(bonus.width/4, 0);
+          ctx.lineTo(0, -bonus.width/4);
+          ctx.lineTo(0, bonus.width/4);
+          ctx.closePath();
+        }
         ctx.fill();
         
         ctx.shadowBlur = 0;
@@ -895,14 +1536,65 @@
       });
     }
 
+    // Draw web shots
+    function drawWebShots() {
+      webShots.forEach(shot => {
+        ctx.fillStyle = skins[player.skin].web;
+        ctx.fillRect(shot.x, shot.y, shot.width, shot.height);
+      });
+    }
+
+    // Draw particles
+    function drawParticles() {
+      particles.forEach(particle => {
+        ctx.save();
+        ctx.globalAlpha = particle.life / 30;
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
     // Check collisions
     function checkCollisions() {
       for (let i = 0; i < webs.length; i++) {
-        if (collision(player, webs[i])) {
-          if (player.shield) {
-            score += webs[i].score * 2;
+        if (collision(player, webs[i]) && !player.isJumping) {
+          if (player.shield || (player.abilityActive && skins[player.skin].ability === 'invincibility')) {
+            score += webs[i].score * comboMultiplier * 2;
             webs.splice(i, 1);
+            comboCount++;
+            updateCombo();
             updateScore();
+            createParticles(player.x + player.width / 2, player.y + player.height / 2, 10, '#FFFFFF');
+            shakeCamera(5, 10);
+          } else if (webs[i].type === 'sticky') {
+            player.slowed = true;
+            player.slowTime = 180;
+            player.speed = 3;
+            webs.splice(i, 1);
+            comboCount = 0;
+            updateCombo();
+            createParticles(player.x + player.width / 2, player.y + player.height / 2, 10, '#00FF00');
+          } else if (webs[i].type !== 'destructible') {
+            endGame();
+            gameOver();
+            return;
+          }
+        }
+      }
+
+      for (let i = 0; i < enemies.length; i++) {
+        if (collision(player, enemies[i]) && !player.isJumping) {
+          if (player.shield || (player.abilityActive && skins[player.skin].ability === 'invincibility')) {
+            score += enemies[i].score * comboMultiplier * 2;
+            enemies.splice(i, 1);
+            comboCount++;
+            updateCombo();
+            updateScore();
+            createParticles(player.x + player.width / 2, player.y + player.height / 2, 10, '#FF0000');
+            shakeCamera(5, 10);
           } else {
             endGame();
             gameOver();
@@ -912,18 +1604,65 @@
       }
 
       for (let i = 0; i < bonuses.length; i++) {
-        if (collision(player, bonuses[i])) {
-          player.shield = true;
-          player.shieldTime = 300;
-          shieldElement.textContent = '5s';
-          shieldElement.style.color = '#fbbf24';
+        if (collision(player, bonuses[i]) && !player.isJumping) {
+          if (bonuses[i].type === 'shield') {
+            player.shield = true;
+            player.shieldTime = (player.abilityActive && skins[player.skin].ability === 'longShield') ? 600 : 300;
+            shieldElement.textContent = Math.ceil(player.shieldTime / 60) + 's';
+            shieldElement.style.color = '#fbbf24';
+            shieldCount++;
+            missions.find(m => m.type === 'shield').current = shieldCount;
+            updateMissions();
+          } else if (bonuses[i].type === 'speed') {
+            player.speedBoost = true;
+            player.speedBoostTime = 300;
+            player.speed = (player.abilityActive && skins[player.skin].ability === 'speedBoost') ? 15 : 10;
+          } else if (bonuses[i].type === 'multiplier') {
+            player.scoreMultiplier = true;
+            player.scoreMultiplierTime = 300;
+            comboMultiplier = 2;
+            updateCombo();
+          } else if (bonuses[i].type === 'web') {
+            player.webAmmo = Math.min(player.webAmmo + (skins[player.skin].ability === 'extraWeb' ? 5 : 3), 5);
+          }
           bonuses.splice(i, 1);
+          comboCount++;
+          updateCombo();
           
           canvas.style.boxShadow = '0 0 30px rgba(251, 191, 36, 0.8)';
           setTimeout(() => {
             canvas.style.boxShadow = '';
           }, 300);
+          createParticles(player.x + player.width / 2, player.y + player.height / 2, 15, '#FFD700');
+          bonusSound.play().catch(e => console.log('Bonus sound play failed:', e));
           break;
+        }
+      }
+
+      for (let i = 0; i < webShots.length; i++) {
+        for (let j = 0; j < webs.length; j++) {
+          if (webs[j].type === 'destructible' && collision(webShots[i], webs[j])) {
+            score += webs[j].score * comboMultiplier * 1.5;
+            webShots.splice(i, 1);
+            webs.splice(j, 1);
+            comboCount++;
+            updateCombo();
+            updateScore();
+            createParticles(webs[j].x + webs[j].width / 2, webs[j].y + webs[j].height / 2, 10, '#FFA500');
+            break;
+          }
+        }
+        
+        for (let j = 0; j < enemies.length; j++) {
+          if (collision(webShots[i], enemies[j])) {
+            score += enemies[j].score * comboMultiplier * 1.5;
+            webShots.splice(i, 1);
+            enemies.splice(j, 1);
+            comboCount++;
+            updateCombo();
+            updateScore();
+            break;
+          }
         }
       }
     }
@@ -948,17 +1687,32 @@
       score = 0;
       frameCount = 0;
       webSpeed = 3;
+      comboMultiplier = 1;
+      comboCount = 0;
+      comboTimer = 0;
       webs = [];
+      enemies = [];
       bonuses = [];
+      webShots = [];
       player.x = canvasWidth / 2 - player.width / 2;
       player.y = canvasHeight - player.height - 20;
       player.shield = false;
       player.shieldTime = 0;
+      player.slowed = false;
+      player.slowTime = 0;
+      player.speedBoost = false;
+      player.speedBoostTime = 0;
+      player.scoreMultiplier = false;
+      player.scoreMultiplierTime = 0;
+      player.webAmmo = 3;
+      player.isJumping = false;
+      player.jumpVelocity = 0;
       player.state = 'idle';
       player.frame = 0;
       player.frameCount = 0;
       
       updateScore();
+      updateCombo();
       shieldElement.textContent = 'OFF';
       shieldElement.style.color = '#fff';
       
@@ -967,7 +1721,9 @@
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       drawBackground();
     }
-
+        document.getElementById('closeUnlockModal').addEventListener('click', function() {
+      document.getElementById('unlockModal').classList.add('hidden');
+    });
     // Game loop
     function gameLoop() {
       if (!gameRunning || gamePaused) return;
@@ -979,13 +1735,18 @@
       webSpawnRate = Math.max(30, 50 - Math.floor(score / 500));
       if (frameCount % webSpawnRate === 0) createWeb();
       if (frameCount % bonusSpawnRate === 0) createBonus();
+      if (frameCount % enemySpawnRate === 0 && score > 1000) createEnemy();
 
       movePlayer();
       moveWebs();
+      moveEnemies();
       moveBonuses();
+      moveWebShots();
       drawPlayer();
       drawWebs();
+      drawEnemies();
       drawBonuses();
+      drawWebShots();
       checkCollisions();
 
       animationFrame = requestAnimationFrame(gameLoop);
@@ -1013,7 +1774,8 @@
         pauseButton.disabled = false;
         restartButton.disabled = false;
         pauseButton.innerHTML = '<i class="fas fa-pause mr-2"></i> PAUSE';
-        
+         document.getElementById('finalScore').textContent = score;
+  document.getElementById('highScoreModal').textContent = highScore;
         if (score === 0) resetGame();
         
         startGame();
