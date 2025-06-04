@@ -21,6 +21,7 @@
       background: linear-gradient(135deg, var(--spider-dark) 0%, #172a45 100%);
       color: var(--spider-light);
       overflow-x: hidden;
+      touch-action: none; /* Prevent default touch behaviors */
     }
     
     .title-font {
@@ -88,6 +89,7 @@
       background: radial-gradient(circle at center, #0f1e36 0%, #0a1629 100%);
       border-radius: 12px;
       border: 1px solid rgba(100, 180, 246, 0.15);
+      touch-action: none;
     }
     
     .feature-card {
@@ -122,6 +124,38 @@
       
       .desktop-instructions {
         display: none;
+      }
+      
+      .game-container {
+        padding: 0 10px;
+      }
+      
+      header {
+        padding: 0 10px;
+      }
+      
+      footer {
+        padding: 0 10px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      canvas {
+        width: 100%;
+        height: auto;
+      }
+      
+      .mobile-controls {
+        gap: 20px;
+      }
+      
+      .btn-primary, .btn-secondary {
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
       }
     }
   </style>
@@ -191,7 +225,7 @@
         <ul class="space-y-3">
           <li class="flex items-start">
             <i class="fas fa-arrow-left spider-icon mt-1 mr-3"></i>
-            <span>Utilisez les <span class="font-bold text-white">flèches gauche/droite</span> pour déplacer Spider-Man</span>
+            <span>Utilisez les <span class="font-bold text-white">flèches gauche/droite</span> ou glissez sur l'écran pour déplacer Spider-Man</span>
           </li>
           <li class="flex items-start">
             <i class="fas fa-ban spider-icon mt-1 mr-3"></i>
@@ -216,91 +250,102 @@
       
       <div class="glass-panel rounded-2xl p-6">
         <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
-          <i class="fas fa-star mr-2"></i> Fonctionnalités Premium
+          <i class="fas fa-star mr-2"></i> Personnalisation
         </h2>
         
-        <div class="grid grid-cols-2 gap-4">
-          <div class="feature-card glass-panel rounded-xl p-4 text-center">
-            <i class="fas fa-medal text-2xl text-yellow-400 mb-2"></i>
-            <p class="text-sm">Classements mondiaux</p>
+        <div class="grid grid-cols-2 gap-4" id="skinSelector">
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="classic">
+            <i class="fas fa-user text-2xl text-red-500 mb-2"></i>
+            <p class="text-sm">Classique</p>
           </div>
-          <div class="feature-card glass-panel rounded-xl p-4 text-center">
-            <i class="fas fa-user-astronaut text-2xl text-cyan-300 mb-2"></i>
-            <p class="text-sm">Skins exclusifs</p>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="black">
+            <i class="fas fa-user text-2xl text-black mb-2"></i>
+            <p class="text-sm">Symbiote</p>
           </div>
-          <div class="feature-card glass-panel rounded-xl p-4 text-center">
-            <i class="fas fa-bolt text-2xl text-purple-400 mb-2"></i>
-            <p class="text-sm">Pouvoirs spéciaux</p>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="scarlet">
+            <i class="fas fa-user text-2xl text-red-700 mb-2"></i>
+            <p class="text-sm">Scarlet</p>
           </div>
-          <div class="feature-card glass-panel rounded-xl p-4 text-center">
-            <i class="fas fa-trophy text-2xl text-amber-400 mb-2"></i>
-            <p class="text-sm">Défis quotidiens</p>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="iron">
+            <i class="fas fa-user text-2xl text-red-600 mb-2"></i>
+            <p class="text-sm">Iron Spider</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="blue">
+            <i class="fas fa-user text-2xl text-blue-600 mb-2"></i>
+            <p class="text-sm">Bleu Électrique</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="green">
+            <i class="fas fa-user text-2xl text-green-600 mb-2"></i>
+            <p class="text-sm">Vert Venom</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="purple">
+            <i class="fas fa-user text-2xl text-purple-600 mb-2"></i>
+            <p class="text-sm">Prowler</p>
+          </div>
+          <div class="feature-card glass-panel rounded-xl p-4 text-center cursor-pointer" data-skin="white">
+            <i class="fas fa-user text-2xl text-white mb-2"></i>
+            <p class="text-sm">Araignée Blanche</p>
           </div>
         </div>
-        
-        <button class="btn-primary w-full mt-6 py-3 rounded-xl font-bold">
-          <i class="fas fa-crown mr-2"></i> Débloquer Premium
-        </button>
       </div>
       
-      <div class="glass-panel rounded-2xl p-6">
-        <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
-          <i class="fas fa-trophy mr-2"></i> Classement
-        </h2>
-        
-        <div class="space-y-3">
-          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-            <div class="flex items-center">
-              <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
-                <span class="text-xs font-bold text-spider-dark">1</span>
-              </div>
-              <span>SpideyFan99</span>
+      <div class="glass-panel rounded-2xl p-_EMPTY
+      <h2 class="text-xl font-bold title-font mb-4 text-spider-accent">
+        <i class="fas fa-trophy mr-2"></i> Classement
+      </h2>
+      
+      <div class="space-y-3">
+        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center mr-3">
+              <span class="text-xs font-bold text-spider-dark">1</span>
             </div>
-            <span class="font-bold">24,580</span>
+            <span>SpideyFan99</span>
           </div>
-          
-          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-            <div class="flex items-center">
-              <div class="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center mr-3">
-                <span class="text-xs font-bold text-spider-dark">2</span>
-              </div>
-              <span>WebSlinger</span>
-            </div>
-            <span class="font-bold">21,340</span>
-          </div>
-          
-          <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
-            <div class="flex items-center">
-              <div class="w-6 h-6 rounded-full bg-amber-700 flex items-center justify-center mr-3">
-                <span class="text-xs font-bold text-spider-dark">3</span>
-              </div>
-              <span>MJ_4ever</span>
-            </div>
-            <span class="font-bold">18,750</span>
-          </div>
-          
-          <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
-            <div class="flex items-center">
-              <span class="w-6 text-center mr-3">4</span>
-              <span>VenomFan</span>
-            </div>
-            <span>15,220</span>
-          </div>
-          
-          <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
-            <div class="flex items-center">
-              <span class="w-6 text-center mr-3">5</span>
-              <span>GwenStacy</span>
-            </div>
-            <span>12,450</span>
-          </div>
+          <span class="font-bold">24,580</span>
         </div>
         
-        <div class="text-center mt-4">
-          <button class="text-spider-accent text-sm font-medium">
-            Voir le classement complet <i class="fas fa-arrow-right ml-1"></i>
-          </button>
+        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center mr-3">
+              <span class="text-xs font-bold text-spider-dark">2</span>
+            </div>
+            <span>WebSlinger</span>
+          </div>
+          <span class="font-bold">21,340</span>
         </div>
+        
+        <div class="flex items-center justify-between glass-panel p-3 rounded-lg">
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full bg-amber-700 flex items-center justify-center mr-3">
+              <span class="text-xs font-bold text-spider-dark">3</span>
+            </div>
+            <span>MJ_4ever</span>
+          </div>
+          <span class="font-bold">18,750</span>
+        </div>
+        
+        <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
+          <div class="flex items-center">
+            <span class="w-6 text-center mr-3">4</span>
+            <span>VenomFan</span>
+          </div>
+          <span>15,220</span>
+        </div>
+        
+        <div class="flex items-center justify-between opacity-70 p-3 rounded-lg">
+          <div class="flex items-center">
+            <span class="w-6 text-center mr-3">5</span>
+            <span>GwenStacy</span>
+          </div>
+          <span>12,450</span>
+        </div>
+      </div>
+      
+      <div class="text-center mt-4">
+        <button class="text-spider-accent text-sm font-medium">
+          Voir le classement complet <i class="fas fa-arrow-right ml-1"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -366,6 +411,7 @@
     const modalRestart = document.getElementById('modalRestart');
     const modalMenu = document.getElementById('modalMenu');
     const bgMusic = document.getElementById('bgMusic');
+    const skinSelector = document.getElementById('skinSelector');
 
     // Game variables
     let canvasWidth = canvas.width;
@@ -380,7 +426,7 @@
     // Player (Spider-Man)
     const player = {
       x: canvasWidth / 2 - 15,
-      y: canvasHeight - 60,
+      y: canvasHeight - 70, // Adjusted for better visibility
       width: 30,
       height: 50,
       speed: 7,
@@ -390,7 +436,20 @@
       state: 'idle', // idle, left, right
       frame: 0,
       frameCount: 0,
-      frameDelay: 10
+      frameDelay: 8,
+      skin: 'classic' // Default skin
+    };
+
+    // Skin definitions
+    const skins = {
+      classic: { primary: '#E63946', secondary: '#1D3557', web: '#E63946' },
+      black: { primary: '#000000', secondary: '#333333', web: '#FFFFFF' },
+      scarlet: { primary: '#8B0000', secondary: '#4682B4', web: '#FFD700' },
+      iron: { primary: '#B22222', secondary: '#FFD700', web: '#4682B4' },
+      blue: { primary: '#1E90FF', secondary: '#000080', web: '#FFFFFF' },
+      green: { primary: '#228B22', secondary: '#006400', web: '#FFD700' },
+      purple: { primary: '#4B0082', secondary: '#800080', web: '#FFFFFF' },
+      white: { primary: '#F5F5F5', secondary: '#A9A9A9', web: '#FF4500' }
     };
 
     // Web sizes and properties
@@ -407,18 +466,29 @@
     let bonuses = [];
     const bonusSpawnRate = 1000;
 
+    // Touch control variables
+    let touchStartX = 0;
+    let touchCurrentX = 0;
+    let isTouching = false;
+
     // Adjust canvas size for mobile
     function resizeCanvas() {
       if (window.innerWidth < 768) {
-        canvas.width = window.innerWidth - 40;
-        canvas.height = window.innerWidth - 40;
+        const size = Math.min(window.innerWidth - 40, 400); // Cap size for better visibility
+        canvas.width = size;
+        canvas.height = size;
+        player.width = size * 0.075; // Scale player size
+        player.height = size * 0.125;
       } else {
         canvas.width = 600;
         canvas.height = 600;
+        player.width = 30;
+        player.height = 50;
       }
       canvasWidth = canvas.width;
       canvasHeight = canvas.height;
       player.x = canvasWidth / 2 - player.width / 2;
+      player.y = canvasHeight - player.height - 20; // Ensure player is above bottom edge
     }
     
     window.addEventListener('resize', resizeCanvas);
@@ -432,7 +502,7 @@
         y: 0,
         width: webSizes[sizeIndex].width,
         height: webSizes[sizeIndex].height,
-        speed: webSizes[sizeIndex].speed + (score / 100),
+        speed: webSizes[sizeIndex].speed + (score / 1000),
         score: webSizes[sizeIndex].score,
         size: webSizes[sizeIndex].size
       };
@@ -461,7 +531,7 @@
       );
     }
 
-    // Keyboard controls
+    // Input controls
     function keyDownHandler(e) {
       if (gameRunning && !gamePaused) {
         if (e.key === 'ArrowRight') player.dx = player.speed;
@@ -473,19 +543,50 @@
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') player.dx = 0;
     }
 
-    // Mobile controls
     leftBtn.addEventListener('mousedown', () => player.dx = -player.speed);
-    leftBtn.addEventListener('touchstart', () => player.dx = -player.speed);
+    leftBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      player.dx = -player.speed;
+    });
     leftBtn.addEventListener('mouseup', () => player.dx = 0);
     leftBtn.addEventListener('touchend', () => player.dx = 0);
     
     rightBtn.addEventListener('mousedown', () => player.dx = player.speed);
-    rightBtn.addEventListener('touchstart', () => player.dx = player.speed);
+    rightBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      player.dx = player.speed;
+    });
     rightBtn.addEventListener('mouseup', () => player.dx = 0);
     rightBtn.addEventListener('touchend', () => player.dx = 0);
     
     [leftBtn, rightBtn].forEach(btn => {
       btn.addEventListener('contextmenu', e => e.preventDefault());
+    });
+
+    // Touch slide controls
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameRunning && !gamePaused) {
+        isTouching = true;
+        touchStartX = e.touches[0].clientX;
+        touchCurrentX = touchStartX;
+      }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (isTouching && gameRunning && !gamePaused) {
+        touchCurrentX = e.touches[0].clientX;
+        const deltaX = touchCurrentX - touchStartX;
+        player.dx = (deltaX / 10) * player.speed; // Smooth sliding
+        touchStartX = touchCurrentX;
+      }
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      isTouching = false;
+      player.dx = 0;
     });
 
     // Update player position
@@ -551,12 +652,12 @@
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
       ctx.fillStyle = 'rgba(15, 25, 45, 0.7)';
-      const buildingHeight = 80;
-      const buildingWidth = 50;
-      const gap = 20;
+      const buildingHeight = canvasHeight * 0.15;
+      const buildingWidth = canvasWidth * 0.1;
+      const gap = canvasWidth * 0.05;
       
       for (let i = 0; i < canvasWidth; i += buildingWidth + gap) {
-        const heightVariation = Math.random() * 30;
+        const heightVariation = Math.random() * (canvasHeight * 0.05);
         ctx.fillRect(i, canvasHeight - buildingHeight - heightVariation, buildingWidth, buildingHeight + heightVariation);
       }
       
@@ -589,7 +690,7 @@
       
       player.frameCount++;
       if (player.frameCount >= player.frameDelay) {
-        player.frame = (player.frame + 1) % 2;
+        player.frame = (player.frame + 1) % 3; // Three frames for smoother animation
         player.frameCount = 0;
       }
 
@@ -608,32 +709,37 @@
         ctx.stroke();
       }
 
-      // Spider-Man body with animation
+      // Dynamic tilt and scale for animation
       const tilt = player.state === 'right' ? -0.2 : player.state === 'left' ? 0.2 : 0;
+      const scale = player.frame === 1 ? 1.05 : 1; // Slight bounce effect
       ctx.rotate(tilt);
+      ctx.scale(scale, scale);
+
+      // Colors based on skin
+      const colors = skins[player.skin];
 
       // Head with web pattern
-      ctx.fillStyle = '#E63946';
+      ctx.fillStyle = colors.primary;
       ctx.beginPath();
       ctx.arc(0, -player.height / 3, player.width / 3, 0, Math.PI * 2);
       ctx.fill();
 
       // Web pattern on head
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < 6; i++) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 0.7;
+      for (let i = 0; i < 8; i++) {
         ctx.beginPath();
         ctx.moveTo(0, -player.height / 3);
         ctx.lineTo(
-          (player.width / 3) * Math.cos((i * Math.PI) / 3),
-          (-player.height / 3) + (player.width / 3) * Math.sin((i * Math.PI) / 3)
+          (player.width / 3) * Math.cos((i * Math.PI) / 4),
+          (-player.height / 3) + (player.width / 3) * Math.sin((i * Math.PI) / 4)
         );
         ctx.stroke();
       }
 
       // Eyes with dynamic shape
       ctx.fillStyle = 'white';
-      const eyeOffset = player.frame === 0 ? 0 : 1;
+      const eyeOffset = player.frame === 0 ? 0 : player.frame === 1 ? 1 : -1;
       ctx.beginPath();
       ctx.ellipse(-player.width / 8 + eyeOffset, -player.height / 3 - 2, 6, 4, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -642,22 +748,26 @@
       ctx.fill();
 
       // Body with web pattern
-      ctx.fillStyle = '#1D3557';
+      ctx.fillStyle = colors.secondary;
       ctx.fillRect(-player.width / 3, -player.height / 6, player.width * 2 / 3, player.height / 2);
       
       // Web pattern on body
-      ctx.strokeStyle = '#E63946';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = colors.web;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(-player.width / 3, -player.height / 6);
       ctx.lineTo(player.width / 3, -player.height / 6 + player.height / 2);
       ctx.moveTo(player.width / 3, -player.height / 6);
       ctx.lineTo(-player.width / 3, -player.height / 6 + player.height / 2);
+      ctx.moveTo(0, -player.height / 6);
+      ctx.lineTo(0, -player.height / 6 + player.height / 2);
       ctx.stroke();
 
-      // Spider logo
-      ctx.fillStyle = '#E63946';
+      // Spider logo with animation
+      ctx.fillStyle = colors.web;
       ctx.beginPath();
+      const logoScale = player.frame === 1 ? 1.1 : 1;
+      ctx.scale(logoScale, logoScale);
       ctx.moveTo(0, -player.height / 6 + 5);
       ctx.lineTo(-6, 0);
       ctx.lineTo(-4, 5);
@@ -668,22 +778,23 @@
       ctx.lineTo(6, 0);
       ctx.closePath();
       ctx.fill();
+      ctx.scale(1 / logoScale, 1 / logoScale);
 
       // Legs with animation
-      const legOffset = player.frame === 0 ? 0 : 2;
-      ctx.fillStyle = '#1D3557';
+      const legOffset = player.frame === 0 ? 0 : player.frame === 1 ? 2 : -2;
+      ctx.fillStyle = colors.secondary;
       ctx.fillRect(-player.width / 3 + legOffset, player.height / 6, 8, player.height / 3);
       ctx.fillRect(player.width / 3 - 8 - legOffset, player.height / 6, 8, player.height / 3);
 
       // Web-shooting effect
       if (player.state !== 'idle') {
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(player.state === 'right' ? player.width / 3 : -player.width / 3, -player.height / 6);
         ctx.lineTo(
-          (player.state === 'right' ? 50 : -50),
-          -player.height / 6 - Math.sin(frameCount * 0.2) * 10
+          (player.state === 'right' ? 60 : -60),
+          -player.height / 6 - Math.sin(frameCount * 0.3) * 15
         );
         ctx.stroke();
       }
@@ -705,12 +816,10 @@
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.lineWidth = lineWidth;
 
-        // Web center
         ctx.beginPath();
         ctx.arc(0, 0, web.width / 6, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Web lines
         for (let i = 0; i < 8; i++) {
           ctx.beginPath();
           ctx.moveTo(0, 0);
@@ -721,7 +830,6 @@
           ctx.stroke();
         }
 
-        // Web rings
         ctx.beginPath();
         ctx.arc(0, 0, web.width / 3, 0, Math.PI * 2);
         ctx.stroke();
@@ -730,7 +838,6 @@
         ctx.arc(0, 0, web.width / 2.2, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Visual distinction for size
         if (web.size === 'small') {
           ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
           ctx.beginPath();
@@ -844,6 +951,7 @@
       webs = [];
       bonuses = [];
       player.x = canvasWidth / 2 - player.width / 2;
+      player.y = canvasHeight - player.height - 20;
       player.shield = false;
       player.shieldTime = 0;
       player.state = 'idle';
@@ -868,7 +976,6 @@
       drawBackground();
       frameCount++;
 
-      // Dynamic spawn rate
       webSpawnRate = Math.max(30, 50 - Math.floor(score / 500));
       if (frameCount % webSpawnRate === 0) createWeb();
       if (frameCount % bonusSpawnRate === 0) createBonus();
@@ -952,6 +1059,15 @@
     modalMenu.addEventListener('click', () => {
       resetGame();
       gameOverModal.classList.add('hidden');
+    });
+
+    // Skin selection
+    skinSelector.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('click', () => {
+        player.skin = card.dataset.skin;
+        skinSelector.querySelectorAll('.feature-card').forEach(c => c.classList.remove('border-spider-accent'));
+        card.classList.add('border-spider-accent');
+      });
     });
 
     document.addEventListener('keydown', keyDownHandler);
